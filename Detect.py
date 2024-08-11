@@ -1,15 +1,17 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify , send_from_directory
 from flask_cors import CORS
 import cv2
 from ultralytics import YOLO
 import os
 import torch
 
+
 app = Flask(__name__)
 CORS(app)
-
+initial = 0 
 # Configuration du dossier de téléchargement
 app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['Analyse_FOLDER'] = 'images'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 def decouper(image) : 
     # Obtenir les dimensions de l'image
@@ -74,15 +76,17 @@ def upload_file():
 
             if torch.cuda.is_available():
                 model.to('cuda')
-                results = model.predict(images, device='cuda',save=True)
+                results = model.predict(images, device='cuda')
                 print("Avec GPU")
             else : 
-                results = model.predict(images,save=True)
+                results = model.predict(images)
                 print("Avec CPU")
            
             i = 0
-            files = []
+            files = {}
             class_count = {}
+            app.config[f'FOLDER{initial}'] = f"images/D{initial}"
+            os.makedirs(app.config[f'FOLDER{initial}'], exist_ok=True)
             for result in results : 
                 detections = result.boxes  # Obtenir les détections
                 class_counts[f'results{i}'] = result.path   
@@ -95,7 +99,6 @@ def upload_file():
                     else:
                         class_count[class_name] = 1
                 i = i+1
-
                 # Drawing bounding boxes and saving images
                 for class_name in set(model.names[int(detection.cls)] for detection in detections):
                     image_copy = image.copy()
@@ -103,12 +106,12 @@ def upload_file():
                         class_id = int(detection.cls)
                         if model.names[class_id] == class_name:
                             x1, y1, x2, y2 = map(int, detection.xyxy[0])
-                            cv2.rectangle(image_copy, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                            cv2.putText(image_copy, class_name, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-                    
-                    output_filepath = os.path.join("images", f"{class_name}.jpg")
+                            cv2.rectangle(image_copy, (x1, y1), (x2, y2), (255, 0, 0), 4)
+                            #cv2.putText(image_copy, class_name, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 255), 2)
+
+                    output_filepath = os.path.join(f"images/D{initial}", f"image{class_name}.jpg")
                     cv2.imwrite(output_filepath, image_copy)
-                    files.append(output_filepath)
+                    files[class_name] = output_filepath
 
     class_counts['file'] = files
     class_counts['class_counts'] = class_count
@@ -116,11 +119,19 @@ def upload_file():
 
 @app.route('/kimathb', methods=['POST'])
 def returne () :
+    global initial 
+    initial = initial + 1
     #return jsonify({'message': 'Hello, World!'})
     return jsonify(upload_file())
 @app.route('/')
 def home():
     return render_template('index.html')
+
+
+@app.route('/images/<path:filename>')
+def detect_file(filename):
+    return send_from_directory(app.config['Analyse_FOLDER'], filename)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
