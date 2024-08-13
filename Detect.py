@@ -12,6 +12,8 @@ initial = 0
 # Configuration du dossier de téléchargement
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['Analyse_FOLDER'] = 'images'
+app.config['CountRCB'] = 'output'
+
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 def decouper(image) : 
     # Obtenir les dimensions de l'image
@@ -61,6 +63,11 @@ def upload_file():
                 class_counts['your choice'] = "Counting different cellule"
             else : 
                 class_counts['class_counts'] = {'Calcule red Blood Cell' : predict(filepath) }
+                class_counts['file'] = {
+                    'mask': 'rcb/mask.png',
+                    'edge': 'rcb/edge.png',
+                    'hough' : 'rcb/hough_transform.png'
+                }
                 class_counts['your choice'] = "Calculle RBC"
                 return class_counts
 
@@ -130,6 +137,10 @@ def home():
 @app.route('/images/<path:filename>')
 def detect_file(filename):
     return send_from_directory(app.config['Analyse_FOLDER'], filename)
+
+@app.route('/output/<path:filename>')
+def get_image(filename):
+    return send_from_directory(app.config['CountRCB'], filename)
 
 
 if __name__ == '__main__':

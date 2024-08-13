@@ -329,7 +329,7 @@ def predict(img):
 
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
-
+    plt.imsave(f'{output_directory}/mask.png', new_mask)
     plt.imsave(f'{output_directory}/edge.png', new_edge)
     return hough_transform(f'{output_directory}/edge.png')
 

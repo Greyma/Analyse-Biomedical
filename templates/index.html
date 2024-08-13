@@ -11,6 +11,7 @@
 <body>
   <div class="container p-5">
     <h1 class="py-5">Analyse Biomedical</h1>
+
     <form id="myForm" enctype="multipart/form-data">
       <div class="mb-3">
         <label for="formFile" class="form-label">Default file input example</label>
@@ -30,29 +31,20 @@
     <div id="loading" style="display: none;">
       <!-- Spinner animation -->
       <div class="spinner-border" role="status">
-          <span class="sr-only">Loading...</span>
+          <!-- <span class="sr-only">Loading...</span> -->
       </div>
       <p>Loading, please wait...</p>
   </div>
-  
+
     <div id="response">
 
     </div>
+
   </div>
 
   <!-- Your custom script should come after jQuery is loaded -->
    
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <div id="loading" style="display: none;">
-    <!-- Spinner animation -->
-    <span class="sr-only">Loading...</span>
-    <div class="spinner-border" role="status">
-        
-    </div>
-    <p>Loading, please wait...</p>
-</div>
-
-<div id="response"></div>
 
 <script>
     $(document).ready(function() {
@@ -80,12 +72,22 @@
 
                     // Clear previous response
                     $('#response').empty();
+
                     $.each(response.class_counts, function(key, value) {
-                        let p = $('<p></p>', {
+                        if (key == 'Calcule red Blood Cell' ){
+                            let p = $('<p></p>', {
                             text: key + ': ' + value,
                             class: 'm-5'
-                        });
-                        $('#response').append(p);
+                            });                        
+                            $('#response').append(p);
+                            if (response.file) {
+                                $.each(response.file, function(index, url) {
+                                    cardapp2('#response',index,url)
+                                });
+                            }
+                        } else {
+                            cardapp('#response',key,value,response.file[key])
+                        }
                     });
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -101,6 +103,28 @@
                 }
             });
         });
+
+        function cardapp2(source,index,url){
+
+                var card = $('<div>', { class: 'card', style: 'width: 18rem; margin:10px;' });
+                var img = $('<img>', { src: `http://127.0.0.1:5000/output/${url}`, class: 'card-img-top', alt: index });
+                var cardBody = $('<div>', { class: 'card-body' });
+                var cardText = $('<p>', { class: 'card-text', text: ` type d'image : ${index}` });
+                cardBody.append(cardText);
+                card.append(img).append(cardBody);
+                $(source).append(card);
+        }
+
+        function cardapp(source,index,value,url){
+
+            var card = $('<div>', { class: 'card', style: 'width: 18rem; margin:10px;' });
+            var img = $('<img>', { src: `http://127.0.0.1:5000/${url}`, class: 'card-img-top', alt: index });
+            var cardBody = $('<div>', { class: 'card-body' });
+            var cardText = $('<p>', { class: 'card-text', text: ` nombre : ${value}` });
+            cardBody.append(cardText);
+            card.append(img).append(cardBody);
+            $(source).append(card);
+        }
     });
 </script>
 
