@@ -36,8 +36,8 @@
       <p>Loading, please wait...</p>
   </div>
 
-    <div id="response">
-
+    <div id="response" class="container text-center">
+            
     </div>
 
   </div>
@@ -72,7 +72,7 @@
 
                     // Clear previous response
                     $('#response').empty();
-
+                    var row = $('<div>', { class: 'row'});
                     $.each(response.class_counts, function(key, value) {
                         if (key == 'Calcule red Blood Cell' ){
                             let p = $('<p></p>', {
@@ -80,14 +80,17 @@
                             class: 'm-5'
                             });                        
                             $('#response').append(p);
+                            $('#response').append(row);
                             if (response.file) {
                                 $.each(response.file, function(index, url) {
-                                    cardapp2('#response',index,url)
+                                    cardapp2('#response .row',index,url)
                                 });
                             }
                         } else {
-                            cardapp('#response',key,value,response.file[key])
+                            $('#response').append(row);
+                            cardapp('#response .row',key,value,response.file[key])
                         }
+                        
                     });
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -105,17 +108,19 @@
         });
 
         function cardapp2(source,index,url){
-
-                var card = $('<div>', { class: 'card', style: 'width: 18rem; margin:10px;' });
-                var img = $('<img>', { src: `http://127.0.0.1:5000/output/${url}`, class: 'card-img-top', alt: index });
-                var cardBody = $('<div>', { class: 'card-body' });
-                var cardText = $('<p>', { class: 'card-text', text: ` type d'image : ${index}` });
-                cardBody.append(cardText);
-                card.append(img).append(cardBody);
-                $(source).append(card);
+            var col = $('<div>', { class: 'col'});
+            var card = $('<div>', { class: 'col card', style: 'width: 18rem; margin:10px;' });
+            var img = $('<img>', { src: `http://127.0.0.1:5000/output/${url}`, class: 'card-img-top', alt: index });
+            var cardBody = $('<div>', { class: 'card-body' });
+            var cardText = $('<p>', { class: 'card-text', text: ` type d'image : ${index}` });
+            cardBody.append(cardText);
+            card.append(img).append(cardBody);
+            col.append(card);
+            $(source).append(col);
         }
 
         function cardapp(source,index,value,url){
+            var col = $('<div>', { class: 'col'});
 
             var card = $('<div>', { class: 'card', style: 'width: 18rem; margin:10px;' });
             var img = $('<img>', { src: `http://127.0.0.1:5000/${url}`, class: 'card-img-top', alt: index });
@@ -123,7 +128,8 @@
             var cardText = $('<p>', { class: 'card-text', text: ` nombre : ${value}` });
             cardBody.append(cardText);
             card.append(img).append(cardBody);
-            $(source).append(card);
+            col.append(card);
+            $(source).append(col);
         }
     });
 </script>
