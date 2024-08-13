@@ -4,7 +4,7 @@ import cv2
 from ultralytics import YOLO
 import os
 import torch
-
+from GG import predict
 
 app = Flask(__name__)
 CORS(app)
@@ -50,14 +50,6 @@ def upload_file():
         if file:
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(filepath)
-           
-
-            # Charger l'image
-            image = cv2.imread(filepath)
-
-            # Vérifier si l'image est chargée correctement
-            if image is None:
-                return "Image not found"
             
             form_data = request.form.to_dict()
             check = form_data['selected']   
@@ -68,9 +60,16 @@ def upload_file():
                 model = YOLO("Count_50mb.pt")
                 class_counts['your choice'] = "Counting different cellule"
             else : 
-                model = YOLO("Count_RBC.pt")
-                class_counts['your choice'] = "Detect and Calculle"
+                class_counts['class_counts'] = {'Calcule red Blood Cell' : predict(filepath) }
+                class_counts['your choice'] = "Calculle RBC"
+                return class_counts
 
+            # Charger l'image
+            image = cv2.imread(filepath)
+
+            # Vérifier si l'image est chargée correctement
+            if image is None:
+                return "Image not found"
             #images = decouper(image)
             images = [image]
 

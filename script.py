@@ -5,6 +5,7 @@ import torch
 import numpy as np
 import base64
 from flask import jsonify
+from GG import predict
 
 initial = 0 
 def decouper(image) : 
@@ -56,8 +57,9 @@ def upload_file(file,check):
         model = YOLO("Count_50mb.pt")
         class_counts['your choice'] = "Counting different cellule"
     else : 
-        model = YOLO("Count_RBC.pt")
-        class_counts['your choice'] = "Detect and Calculle"
+        class_counts['class_counts'] = predict(image)
+        class_counts['your choice'] = "Calculle RBC"
+        return jsonify(class_counts)
 
     #images = decouper(image)
     images = [image]

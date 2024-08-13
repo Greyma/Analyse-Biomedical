@@ -26,22 +26,44 @@
 
       <input class="btn btn-dark m-2" type="submit" value="Detect">
     </form>
+
+    <div id="loading" style="display: none;">
+      <!-- Spinner animation -->
+      <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+      </div>
+      <p>Loading, please wait...</p>
+  </div>
   
     <div id="response">
-      
+
     </div>
-    <img src={{ url_for('images',filename='Grey.jpg') }}></img>
   </div>
 
   <!-- Your custom script should come after jQuery is loaded -->
    
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
+  <div id="loading" style="display: none;">
+    <!-- Spinner animation -->
+    <span class="sr-only">Loading...</span>
+    <div class="spinner-border" role="status">
+        
+    </div>
+    <p>Loading, please wait...</p>
+</div>
+
+<div id="response"></div>
+
+<script>
     $(document).ready(function() {
         $('#myForm').on('submit', function(e) {
             e.preventDefault(); // Prevent the default form submission
 
             var formData = new FormData(this);
+
+            // Show loading animation
+            $('#loading').show();
+            $('#response').hide(); // Hide the response container initially
 
             $.ajax({
                 url: 'http://127.0.0.1:5000/kimathb',
@@ -50,31 +72,27 @@
                 processData: false,
                 contentType: false,
                 dataType: 'json',
-                timeout: 10000, // Set a timeout of 10 seconds
+                timeout: 50000, // Set a timeout of 50 seconds
                 success: function(response) {
+                    // Hide loading animation
+                    $('#loading').hide();
+                    $('#response').show(); // Show the response container
+
                     // Clear previous response
                     $('#response').empty();
-
-                    // Check if response contains files
-                    if (response.file && Array.isArray(response.file)) {
-                      
-                      $.each(response.class_counts, function(key, value) {
-                        let s = $('<span></span>',{
-                            text: key
+                    $.each(response.class_counts, function(key, value) {
+                        let p = $('<p></p>', {
+                            text: key + ': ' + value,
+                            class: 'm-5'
                         });
-                          let p = $('<p></p>', {
-                              text: key + ': ' + value,
-                              class: 'm-5'
-                          });
-                          $('#response').append(p);
-                      });
-
-                        
-                    } else {
-                        $('#response').text('No images returned from server.');
-                    }
+                        $('#response').append(p);
+                    });
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
+                    // Hide loading animation
+                    $('#loading').hide();
+                    $('#response').show(); // Show the response container
+
                     if (textStatus === 'timeout') {
                         $('#response').text('Error: Request timed out');
                     } else {
@@ -84,6 +102,7 @@
             });
         });
     });
-  </script>
+</script>
+
 </body>
 </html>
