@@ -58,7 +58,7 @@
             $('#response').hide(); // Hide the response container initially
 
             $.ajax({
-                url: 'http://127.0.0.1:5000/kimathb',
+                url: 'http://192.168.1.33:5000/kimathb',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -110,7 +110,7 @@
         function cardapp2(source,index,url){
             var col = $('<div>', { class: 'col'});
             var card = $('<div>', { class: 'col card', style: 'width: 18rem; margin:10px;' });
-            var img = $('<img>', { src: `http://127.0.0.1:5000/output/${url}`, class: 'card-img-top', alt: index });
+            var img = $('<img>', { src: `http://192.168.1.33:5000/output/${url}`, class: 'card-img-top', alt: index });
             var cardBody = $('<div>', { class: 'card-body' });
             var cardText = $('<p>', { class: 'card-text', text: ` type d'image : ${index}` });
             cardBody.append(cardText);
@@ -123,9 +123,9 @@
             var col = $('<div>', { class: 'col'});
 
             var card = $('<div>', { class: 'card', style: 'width: 18rem; margin:10px;' });
-            var img = $('<img>', { src: `http://127.0.0.1:5000/${url}`, class: 'card-img-top', alt: index });
+            var img = $('<img>', { src: `http://192.168.1.33:5000/${url}`, class: 'card-img-top', alt: index });
             var cardBody = $('<div>', { class: 'card-body' });
-            var cardText = $('<p>', { class: 'card-text', text: ` nombre : ${value}` });
+            var cardText = $('<p>', { class: 'card-text', text: ` ${index} : ${value}` });
             cardBody.append(cardText);
             card.append(img).append(cardBody);
             col.append(card);
