@@ -1,0 +1,11 @@
+flask
+flask-cors==4.0.1
+keras==2.13.1
+Keras-Applications==1.0.8
+keras-cv-attention-models==1.4.1
+Keras-Preprocessing==1.1.2
+opencv-contrib-python==4.10.0.84
+opencv-python==4.9.0.80
+tensorflow==2.13.1
+tf-keras==2.15.0
+ultralytics==8.1.3
